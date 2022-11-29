@@ -4,6 +4,8 @@ import assertpy
 import sys
 
 from assertpy import assert_that
+from assertpy import add_extension
+from assertpy import contains
 
 
 class BankAccount:
@@ -46,35 +48,27 @@ class AccountTest(unittest.TestCase):
     def setUp(self):
         self.test_account = BankAccount(0.0, "Tyler Durden", "12345678912345678911123456")
 
+    def test_balance_is_150(self):
+        self.test_account = BankAccount(150, "Tyler Durden", "12345678912345678911123456")
+        if self.test_account.get_balance() != 150:
+            return self.error(f'{self.test_account.get_balance()} is NOT 150!')
+        return self
 
-    def test_account_balance_equals_zero(self):
-        self.assertEqual(self.test_account.get_balance(), 0.0, msg="equal")
+    add_extension(test_balance_is_150)
 
-    def test_account_balance_positive(self):
-        self.test_account.credit(100)
-        self.assertEqual(self.test_account.get_balance(), 100, msg="equal")
+    def test_balance_150(self):
+        assert_that(150).test_balance_is_150()
 
-    def test_account(self):
-        self.assertRaises(Exception, self.test_account.withdraw(150))
+    def test_account_no_contains_digits(self):
+        self.test_account = BankAccount(150, "Tyler Durden", "12345678912345678911123456")
+        if self.test_account.get_acc_no() != "12345678912345678911123456":
+            return self.error(f'{self.test_account.get_acc_no()} is inproper')
+        return self
 
-    def test_account_owner(self):
-        self.test_account.set_owner("Mr White")
-        self.assertEqual(self.test_account.get_owner(), "Mr White", msg="correct")
+    add_extension(test_account_no_contains_digits)
 
-    def test_account_owner_swap(self):
-        self.test_account.set_owner("Mr Pink")
-        self.assertEqual(self.test_account.get_owner(), "Mr Pink", msg="correct")
-
-    def test_account_no_for_twenty_six_digits(self):
-        length = len(self.test_account.get_acc_no())
-        print(length)
-        self.assertEqual(length, 26)
-
-    def test_acc_no_format(self):
-        assert_that(self.test_account.get_acc_no()).is_length(26).starts_with('12').ends_with('56')
-
-    def test_acc_is_digit(self):
-        assert_that(self.test_account.get_acc_no()).is_digit()
+    def test_acc_no_for_proper_digits(self):
+        assert_that("12345678912345678911123456").test_account_no_contains_digits()
 
     def tearDown(self):
         self.test_account = None
